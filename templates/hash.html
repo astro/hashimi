@@ -1,0 +1,25 @@
+<section ng-controller="HashController">
+  <h2 ng-hide="finished">Hashing...</h2>
+  <p>
+    <progress ng-hide="finished"
+	      value="{{progress.bytesRead}}"
+	      max="{{progress.bytesTotal}}">
+    </progress>
+    {{Math.ceil(100 * progress.bytesRead / progress.bytesTotal)}}%
+    <span ng-show="rate > 0">({{humanSize(rate)}}/s)</span>
+  </p>
+
+  <h2 ng-show="finished">Finished!</h2>
+  <button ng-show="finished" ng-click="finalize()">Download my torrent</button>
+
+  
+  <h2 ng-show="finished">Just click above</h2>
+  <h2 ng-hide="finished">While you're waiting...</h2>
+  <p ng-show="showTorrentname">
+    <label for="torrentname">Torrent name:</label>
+    <input id="torrentname" ng-model="torrentname"/>
+    <span style="font-style: italic; font-size: 70%">For convenience, name this like the directory your files are in</span>
+  </p>
+  <p>Why not add some trackers?</p>
+  <textarea id="trackerlist" ng-model="trackerlist" rows="5" cols="40"></textarea>
+</section>

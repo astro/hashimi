@@ -1,0 +1,35 @@
+<section ng-controller="FilesController">
+  <ul class="files">
+    <li ng-repeat="file in files">
+      <span class="name">{{file.name}}</span>
+      <span class="size">{{humanSize(file.size)}}</span>
+      <button ng-click="rmFile(file)">x</button>
+    </li>
+    <li>
+      <label for="file"><button>Add file</button></label>
+      <input type="file" id="file"
+	     style="display: none"
+	     multiple
+	     file-receiver="addFile">
+    </li>
+  </ul>
+  <div ng-show="files.length > 0">
+    <div style="display: inline-block">
+      <p>
+	Total size: {{humanSize(bytesTotal)}}
+      </p>
+      <p>
+	<label for="piecelength">Chunk size:</label>
+	<select id="piecelength"
+		ng-model="pieceLength"
+		ng-options="humanSize(l) for l in pieceLengths"
+		ng-change="updateTotalSize()">
+	</select>
+      </p>
+      <p>Estimated .torrent size: {{humanSize(torrentSizeEstimate)}}</p>
+    </div>
+    <p style="display: inline-block">
+      <button ng-click="startHashing()">Start hashing...</button>
+    </p>
+  </div>
+</section>
