@@ -2,7 +2,7 @@
 
 var app = angular.module('myModule', []);
 
-app.config(function($routeProvider) {
+app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/files', {
 	templateUrl: "templates/files.html"
     }).when('/hash', {
@@ -10,7 +10,7 @@ app.config(function($routeProvider) {
     }).when('/torrent', {
 	templateUrl: "templates/torrent.html"
     }).otherwise({ redirectTo: "/files" });
-});
+}]);
 
 app.directive('fileReceiver', function() {
 	return {
@@ -43,7 +43,8 @@ function humanSize(size) {
 };
 
 /* TODO: https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications#Selecting_files_using_drag_and_drop */
-app.controller('FilesController', function($scope, $location, Hasher) {
+app.controller('FilesController', ['$scope', '$location', 'Hasher',
+	function($scope, $location, Hasher) {
     $scope.files = [];
     $scope.updateTotalSize = function() {
 	$scope.bytesTotal = 0;
@@ -79,7 +80,7 @@ app.controller('FilesController', function($scope, $location, Hasher) {
     $scope.pieceLengths = [16, 17, 18, 19, 20, 21, 22, 23, 24].map(Math.pow.bind(Math, 2));
     $scope.pieceLength = 262144;
     $scope.humanSize = humanSize;
-});
+}]);
 
 app.factory('Hasher', function() {
     var files = [];
@@ -176,7 +177,7 @@ app.factory('Hasher', function() {
     };
 });
 
-app.controller('HashController', function($scope, $location, Hasher, Torrentify) {
+app.controller('HashController', ['$scope', '$location', 'Hasher', 'Torrentify', function($scope, $location, Hasher, Torrentify) {
     $scope.trackerlist = "udp://tracker.openbittorrent.com:80\n" +
 	"udp://tracker.publicbt.com:80\n" +
 	"udp://tracker.istole.it:80\n" +
@@ -228,7 +229,7 @@ app.controller('HashController', function($scope, $location, Hasher, Torrentify)
 			    trackerList);
 	$location.path('/torrent');
     };
-});
+}]);
 
 function iolist2ByteArray(l) {
     var size = 0;
@@ -345,7 +346,7 @@ app.factory('Torrentify', function() {
 });
 
 /* TODO: http://stackoverflow.com/questions/7160720/create-a-file-using-javascript-in-chrome-on-client-side/7160827#7160827 */
-app.controller('TorrentController', function($scope, Torrentify) {
+app.controller('TorrentController', ['$scope', 'Torrentify', function($scope, Torrentify) {
     $scope.torrentname = Torrentify.getTorrentName() + ".torrent";
     $scope.base64 = Torrentify.getAsBase64();
     var blob = Torrentify.getAsBlob();
@@ -370,4 +371,4 @@ app.controller('TorrentController', function($scope, Torrentify) {
 	    }, errorHandler);
 	}, errorHandler);
     }, errorHandler);
-});
+}]);

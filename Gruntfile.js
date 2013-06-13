@@ -5,14 +5,13 @@ module.exports = function(grunt) {
     pkg: {
     },
     uglify: {
-      options: {
-	report: 'gzip'
-      },
       build: {
 	files: {
 	  "build.js": [
-            "app.js",
-	    "base64.js"
+	    "src/angular.js",
+	    "src/digest.js",
+	    "src/base64.js",
+            "src/app.js"
 	  ]
 	}
       }
