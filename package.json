@@ -1,0 +1,8 @@
+{ "name": "hashimi"
+, "version": "0.0.0"
+, "dependencies":
+  { "grunt": "~0.4.1"
+  , "grunt-cli": "~0.1.9"
+  , "grunt-contrib-uglify": "~0.2.2"
+  }
+}
