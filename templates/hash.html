@@ -1,20 +1,21 @@
 <section ng-controller="HashController">
-  <h2 ng-hide="finished">Hashing...</h2>
-  <p>
-    <progress ng-hide="finished"
-	      value="{{progress.bytesRead}}"
+  <h3 ng-hide="finished">Hashing...</h2>
+  <p ng-hide="finished">
+    {{percentage}}%
+    <progress value="{{progress.bytesRead}}"
 	      max="{{progress.bytesTotal}}">
     </progress>
-    {{Math.ceil(100 * progress.bytesRead / progress.bytesTotal)}}%
-    <span ng-show="rate > 0">({{humanSize(rate)}}/s)</span>
+    <span ng-show="eta != null">ETA {{humanTime(eta)}}</span>
   </p>
 
-  <h2 ng-show="finished">Finished!</h2>
-  <button ng-show="finished" ng-click="finalize()">Download my torrent</button>
+  <h3 ng-show="finished">Finished!</h2>
+  <a ng-show="finished" ng-click="finalize()" class="green button">
+    Download my torrent
+  </a>
 
   
-  <h2 ng-show="finished">Just click above</h2>
-  <h2 ng-hide="finished">While you're waiting...</h2>
+  <h3 ng-show="finished">Just click above</h2>
+  <h3 ng-hide="finished">While you're waiting...</h2>
   <p ng-show="showTorrentname">
     <label for="torrentname">Torrent name:</label>
     <input id="torrentname" ng-model="torrentname"/>

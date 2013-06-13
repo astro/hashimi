@@ -1,7 +1,19 @@
 <section ng-controller="TorrentController">
-  <!--a href="data:application/x-bittorrent;content-disposition=attachment;filename={{encodeURIComponent(torrentname)}};base64,{{base64}}">Download {{torrentname}}</a-->
-  <a href="data:application/octet-stream;content-disposition=attachment;filename={{encodeURIComponent(torrentname)}};base64,{{base64}}">Download {{torrentname}}</a>
-  <a href="{{objUrl}}" download="{{torrentname}}">Download {{torrentname}}</a>
+  <pre ng-show="error != null">{{error}}</pre>
 
-  <pre>{{error}}</pre>
+  <h3>Seed your Torrent!</h3>
+  <p style="text-align: left">
+    No data has been uploaded so far. Get a BitTorrent client such as
+    <a href="http://www.transmissionbt.com/">Transmission</a>,
+    <a href="http://libtorrent.rakshasa.no/">rtorrent</a>,
+    <a href="http://deluge-torrent.org/">Deluge</a>,
+    <a href="http://www.utorrent.com/">µTorrent</a>.
+  </p>
+  <h3>Share your Torrent!</h3>
+  <p style="text-align: left">
+    Share the .torrent file with your friends to distribute the data
+    via BitTorrent.
+  </p>
+
+  <a ng-click="$location.path('/files')" class="blue button">Create another torrent</a>
 </section>

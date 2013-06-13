@@ -1,35 +1,36 @@
 <section ng-controller="FilesController">
+  <h3>Pick files!</h3>
   <ul class="files">
-    <li ng-repeat="file in files">
-      <span class="name">{{file.name}}</span>
-      <span class="size">{{humanSize(file.size)}}</span>
-      <button ng-click="rmFile(file)">x</button>
-    </li>
     <li>
-      <label for="file"><button>Add file</button></label>
+      <label for="file" class="blue button">Add file...</label>
       <input type="file" id="file"
-	     style="display: none"
+             style="display: none"
 	     multiple
 	     file-receiver="addFile">
     </li>
+    <li ng-repeat="file in files" class="file">
+      <span class="name">{{file.name}}</span>
+      <span class="size">{{humanSize(file.size)}}</span>
+      <a class="rm red button" ng-click="rmFile(file)">✘</a>
+    </li>
+    <li ng-show="files.length > 0" class="totalSize">
+	Total: {{humanSize(bytesTotal)}}
+    </li>
   </ul>
   <div ng-show="files.length > 0">
-    <div style="display: inline-block">
-      <p>
-	Total size: {{humanSize(bytesTotal)}}
-      </p>
-      <p>
-	<label for="piecelength">Chunk size:</label>
-	<select id="piecelength"
-		ng-model="pieceLength"
-		ng-options="humanSize(l) for l in pieceLengths"
-		ng-change="updateTotalSize()">
-	</select>
-      </p>
-      <p>Estimated .torrent size: {{humanSize(torrentSizeEstimate)}}</p>
-    </div>
-    <p style="display: inline-block">
-      <button ng-click="startHashing()">Start hashing...</button>
+    <p class="chunkSize">
+      <label for="piecelength">Chunk size:</label>
+      <select id="piecelength"
+	      ng-model="pieceLength"
+	      ng-options="humanSize(l) for l in pieceLengths"
+	      ng-change="updateTotalSize()">
+      </select>
+    </p>
+    <p class="torrentSizeEstimate">
+      Estimated .torrent size: {{humanSize(torrentSizeEstimate)}}
     </p>
   </div>
+  <p ng-show="files.length > 0" style="text-align: center">
+    <a ng-click="startHashing()" class="green button">Start hashing...</a>
+  </p>
 </section>

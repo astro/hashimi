@@ -40,7 +40,26 @@ function humanSize(size) {
     } else {
 	return Math.round(size) + " " + units[0];
     }
-};
+}
+
+function humanTime(t) {
+    function pad(s) {
+	s = "" + s;
+	while(s.length < 2)
+	    s = "0" + s;
+	return s;
+    }
+    var h = Math.floor(t / 3600);
+    var m = Math.floor((t % 3600) / 60);
+    var s = Math.ceil(t % 60);
+    if (h > 0) {
+	return h + ":" + pad(m) + ":" + pad(s);
+    } else if (m > 0) {
+	return m + ":" + pad(s);
+    } else {
+	return s + "";
+    }
+}
 
 /* TODO: https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications#Selecting_files_using_drag_and_drop */
 app.controller('FilesController', ['$scope', '$location', 'Hasher',
@@ -139,7 +158,6 @@ app.factory('Hasher', function() {
 		hashPiece(file, fileOffset + chunkSize, files, piecePos + chunkSize);
 	    };
 	    reader.readAsArrayBuffer(file.slice(fileOffset, fileOffset + chunkSize));
-
 	}
 	var file = files.shift();
 	hashPiece(file, 0, files, 0);
@@ -178,6 +196,9 @@ app.factory('Hasher', function() {
 });
 
 app.controller('HashController', ['$scope', '$location', 'Hasher', 'Torrentify', function($scope, $location, Hasher, Torrentify) {
+    if (Hasher.getFiles().length < 1)
+	return $location.path('/files');
+
     $scope.trackerlist = "udp://tracker.openbittorrent.com:80\n" +
 	"udp://tracker.publicbt.com:80\n" +
 	"udp://tracker.istole.it:80\n" +
@@ -185,12 +206,14 @@ app.controller('HashController', ['$scope', '$location', 'Hasher', 'Torrentify',
     $scope.torrentname = Hasher.guessTorrentName();
     $scope.showTorrentname = Hasher.getFiles().length > 1;
     $scope.humanSize = humanSize;
+    $scope.humanTime = humanTime;
 
     var rates = [], bytesLast = 0;
     function onUpdate(progress) {
 	$scope.$apply(function() {
 	    $scope.finished = false;
 	    $scope.progress = progress;
+	    $scope.percentage = Math.ceil(100 * progress.bytesRead / progress.bytesTotal);
 
 	    /* Average rate over last 5s */
 	    var now = new Date().getTime();
@@ -209,6 +232,9 @@ app.controller('HashController', ['$scope', '$location', 'Hasher', 'Torrentify',
 	    } else {
 		$scope.rate = 0;
 	    }
+	    $scope.eta = ($scope.rate < 1) ?
+		null :
+		(progress.bytesTotal - progress.bytesRead) / $scope.rate;
 	});
     }
     function onFinish(result) {
@@ -231,74 +257,40 @@ app.controller('HashController', ['$scope', '$location', 'Hasher', 'Torrentify',
     };
 }]);
 
-function iolist2ByteArray(l) {
-    var size = 0;
-    function measureSize(l) {
-	if (l.constructor === Array) {
-	    l.forEach(measureSize);
-	} else if (l.constructor === String) {
-	    size += l.length;
-	} else {
-	    size += l.byteLength;
-	}
-	console.log("measureSize",l,"size",size)
-    }
-    measureSize(l);
-
-    var result = new Uint8Array(size), offset = 0;
-    function copy(l) {
-	var i;
-	if (l.constructor === Array) {
-	    l.forEach(copy);
-	} else if (l.constructor === String) {
-	    for(i = 0; i < l.length; i++) {
-		result[offset] = l.charCodeAt(i);
-		offset++;
-	    }
-	} else {
-	    l = new Uint8Array(l);
-	    for(i = 0; i < l.byteLength; i++) {
-		result[offset] = l[i];
-		offset++;
-	    }
+function torrent2BlobParts(x) {
+    var result = [];
+    function walk(x) {
+	switch(x.constructor) {
+	case Object:
+	    result.push("d");
+	    Object.keys(x).sort().forEach(function(k) {
+		if (x.hasOwnProperty(k)) {
+		    walk(k);
+		    walk(x[k]);
+		}
+	    });
+	    result.push("e");
+	    break;
+	case Array:
+	    result.push("l");
+	    x.forEach(walk);
+	    result.push("e");
+	    break;
+	case Number:
+	    result.push("i", Math.floor(x).toString(), "e");
+	    break;
+	default:
+	    if (x.constructor === String)
+		x = strToUTF8Arr(x);
+	    result.push(x.byteLength.toString(), ":", x);
 	}
     }
-    copy(l);
+    walk(x);
     return result;
 }
 
-function torrent2iolist(x) {
-    var r = [];
-    switch(x.constructor) {
-    case Object:
-	r.push("d");
-	Object.keys(x).sort().forEach(function(k) {
-	    if (x.hasOwnProperty(k)) {
-		r.push(torrent2iolist(k));
-		r.push(torrent2iolist(x[k]));
-	    }
-	});
-	r.push("e");
-	break;
-    case Array:
-	r.push("l");
-	for(var i = 0; i < x.length; i++)
-	    r.push(torrent2iolist(x[i]));
-	r.push("e");
-	break;
-    case Number:
-	r.push("i", Math.floor(x).toString(), "e");
-	break;
-    default:
-	if (x.constructor === String)
-	    x = strToUTF8Arr(x);
-	r.push(x.byteLength.toString(), ":", x);
-    }
-    return r;
-}
-
 app.factory('Torrentify', function() {
-    var torrentName, file;
+    var torrentName, fileParts;
     return {
 	finalize: function(torrentName_, files, pieceLength, pieceHashes, trackerList) {
 	    torrentName = torrentName_;
@@ -330,25 +322,25 @@ app.factory('Torrentify', function() {
 		    };
 		});
 	    }
-	    file = iolist2ByteArray(torrent2iolist(torrent));
+	    fileParts = torrent2BlobParts(torrent);
 	},
 	getTorrentName: function() {
 	    return torrentName;
 	},
-	getAsBase64: function() {
-	    console.log("getAsBase64", file, base64EncArr(file));
-	    return base64EncArr(file);
-	},
 	getAsBlob: function() {
-	    return new Blob([file], { type: "application/x-bittorrent" });
+	    return new Blob(fileParts, { type: "application/x-bittorrent" });
 	}
     };
 });
 
 /* TODO: http://stackoverflow.com/questions/7160720/create-a-file-using-javascript-in-chrome-on-client-side/7160827#7160827 */
-app.controller('TorrentController', ['$scope', 'Torrentify', function($scope, Torrentify) {
-    $scope.torrentname = Torrentify.getTorrentName() + ".torrent";
-    $scope.base64 = Torrentify.getAsBase64();
+app.controller('TorrentController', ['$scope', '$location', 'Torrentify',
+	function($scope, $location, Torrentify) {
+    var torrentName = Torrentify.getTorrentName();
+    if (!torrentName)
+	return $location.path('/files');
+
+    $scope.torrentname = torrentName + ".torrent";
     var blob = Torrentify.getAsBlob();
     $scope.objUrl = URL.createObjectURL(blob);
 
@@ -359,6 +351,7 @@ app.controller('TorrentController', ['$scope', 'Torrentify', function($scope, To
     var requestFileSystem = window.requestFileSystem ||
 	window.webkitRequestFileSystem ||
 	window.mozRequestFileSystem;
+    requestFileSystem &&
     requestFileSystem(window.TEMPORARY, blob.size, function(fs) {
 	fs.root.getFile($scope.torrentname, { create: true }, function(fileEntry) {
 	    fileEntry.createWriter(function(fileWriter) {
