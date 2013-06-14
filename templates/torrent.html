@@ -1,5 +1,11 @@
 <section ng-controller="TorrentController">
-  <pre ng-show="error != null">{{error}}</pre>
+  <!--pre ng-show="error != null">{{error}}</pre-->
+
+  <p>
+    <a class="green button"
+       type="application/x-bittorrent"
+       href="{{objUrl}}">{{torrentName}}.torrent</a>
+  </p>
 
   <h3>Seed your Torrent!</h3>
   <p style="text-align: left">
@@ -8,6 +14,12 @@
     <a href="http://libtorrent.rakshasa.no/">rtorrent</a>,
     <a href="http://deluge-torrent.org/">Deluge</a>,
     <a href="http://www.utorrent.com/">µTorrent</a>.
+  </p>
+  <p ng-show="isMultiFile" style="text-align: left">
+    Browsers don't reveal directory paths. With the .torrent we just
+    created BitTorrent clients expect a directory
+    <code>{{torrentName}}</code> with all files but no further
+    sub-directories.
   </p>
   <h3>Share your Torrent!</h3>
   <p style="text-align: left">

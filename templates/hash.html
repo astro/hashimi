@@ -1,7 +1,7 @@
 <section ng-controller="HashController">
   <h3 ng-hide="finished">Hashing...</h2>
   <p ng-hide="finished">
-    {{percentage}}%
+    <span>{{percentage}}%</span>
     <progress value="{{progress.bytesRead}}"
 	      max="{{progress.bytesTotal}}">
     </progress>

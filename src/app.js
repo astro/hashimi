@@ -2,7 +2,7 @@
 
 var app = angular.module('myModule', []);
 
-app.config(['$routeProvider', function($routeProvider) {
+app.config(['$routeProvider', '$compileProvider', function($routeProvider, $compileProvider) {
     $routeProvider.when('/files', {
 	templateUrl: "templates/files.html"
     }).when('/hash', {
@@ -10,6 +10,9 @@ app.config(['$routeProvider', function($routeProvider) {
     }).when('/torrent', {
 	templateUrl: "templates/torrent.html"
     }).otherwise({ redirectTo: "/files" });
+
+    /* nuclear disarmament */
+    $compileProvider.urlSanitizationWhitelist(/./);
 }]);
 
 app.directive('fileReceiver', function() {
@@ -337,7 +340,7 @@ function torrent2BlobParts(x) {
 }
 
 app.factory('Torrentify', function() {
-    var torrentName, fileParts, magnetLink, magnetLinkLong;
+    var torrentName, fileParts, magnetLink, magnetLinkLong, isMultiFile;
     return {
 	finalize: function(torrentName_, files, pieceLength, pieceHashes, trackerList) {
 	    torrentName = torrentName_;
@@ -359,8 +362,10 @@ app.factory('Torrentify', function() {
 		}
 	    };
 	    if (files.length == 1) {
+		isMultiFile = false;
 		torrent.info.length = files[0].size;
 	    } else {
+		isMultiFile = true;
 		torrent.info.files = files.map(function(file) {
 		    var parts = file.name.split("/");
 		    return {
@@ -388,6 +393,9 @@ app.factory('Torrentify', function() {
 	getTorrentName: function() {
 	    return torrentName;
 	},
+	isMultiFile: function() {
+	    return isMultiFile;
+	},
 	getAsBlob: function() {
 	    return new Blob(fileParts, { type: "application/x-bittorrent" });
 	},
@@ -407,7 +415,8 @@ app.controller('TorrentController', ['$scope', '$location', 'Torrentify',
     if (!torrentName)
 	return $location.path('/files');
 
-    $scope.torrentname = torrentName + ".torrent";
+    $scope.torrentName = torrentName;
+    $scope.isMultiFile = Torrentify.isMultiFile();
     var blob = Torrentify.getAsBlob();
     $scope.objUrl = URL.createObjectURL(blob);
     $scope.magnetLink = Torrentify.getMagnetLink();
@@ -422,11 +431,16 @@ app.controller('TorrentController', ['$scope', '$location', 'Torrentify',
 	window.mozRequestFileSystem;
     requestFileSystem &&
     requestFileSystem(window.TEMPORARY, blob.size, function(fs) {
-	fs.root.getFile($scope.torrentname, { create: true }, function(fileEntry) {
+	fs.root.getFile($scope.torrentName + ".torrent",
+			{ create: true },
+			function(fileEntry) {
 	    fileEntry.createWriter(function(fileWriter) {
 		fileWriter.onerror = errorHandler;
 		fileWriter.addEventListener("writeend", function() {
-		    /* navigate to file, will download */
+		    $scope.$apply(function() {
+			$scope.objUrl = fileEntry.toURL();
+		    });
+                    /* navigate to file, will download */
 		    location.href = fileEntry.toURL();
 		}, false);
 		fileWriter.write(blob);
