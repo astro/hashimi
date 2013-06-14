@@ -135,6 +135,19 @@ app.controller('FilesController', ['$scope', '$location', 'Hasher',
     $scope.humanSize = humanSize;
 }]);
 
+function arrayToHex(a) {
+    a = new Uint8Array(a);
+    function pad(s) {
+	while(s.length < 2)
+	    s = "0" + s;
+	    return s;
+    }
+    var r = "";
+    for(var i = 0; i < a.byteLength; i++)
+	r += pad("" + a[i].toString(16));
+    return r;
+}
+
 app.factory('Hasher', function() {
     var files = [];
     var updateCbs = [], finishCbs = [];
@@ -324,7 +337,7 @@ function torrent2BlobParts(x) {
 }
 
 app.factory('Torrentify', function() {
-    var torrentName, fileParts;
+    var torrentName, fileParts, magnetLink, magnetLinkLong;
     return {
 	finalize: function(torrentName_, files, pieceLength, pieceHashes, trackerList) {
 	    torrentName = torrentName_;
@@ -357,12 +370,32 @@ app.factory('Torrentify', function() {
 		});
 	    }
 	    fileParts = torrent2BlobParts(torrent);
+
+	    /* Calculate Manget Link */
+	    var infoParts = torrent2BlobParts(torrent.info);
+	    var sha1 = new Digest.SHA1();
+	    for(var i = 0; i < infoParts.length; i++) {
+		sha1.update(infoParts[i]);
+	    }
+	    var infoHash = arrayToHex(sha1.finalize());
+	    magnetLink = "magnet:?xt=urn:btih:" + infoHash;
+	    magnetLinkLong = magnetLink +
+		"&dn=" + encodeURIComponent(torrentName) +
+		trackerList.map(function(tr) {
+		    return "&tr=" + encodeURIComponent(tr);
+		}).join("");
 	},
 	getTorrentName: function() {
 	    return torrentName;
 	},
 	getAsBlob: function() {
 	    return new Blob(fileParts, { type: "application/x-bittorrent" });
+	},
+	getMagnetLink: function() {
+	    return magnetLink;
+	},
+	getMagnetLinkLong: function() {
+	    return magnetLinkLong;
 	}
     };
 });
@@ -377,6 +410,8 @@ app.controller('TorrentController', ['$scope', '$location', 'Torrentify',
     $scope.torrentname = torrentName + ".torrent";
     var blob = Torrentify.getAsBlob();
     $scope.objUrl = URL.createObjectURL(blob);
+    $scope.magnetLink = Torrentify.getMagnetLink();
+    $scope.magnetLinkLong = Torrentify.getMagnetLinkLong();
 
     function errorHandler(error) {
 	$scope.error = error && (error.message || error.toString());
