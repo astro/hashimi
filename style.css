@@ -1,0 +1,119 @@
+body {
+    color: #ccc;
+    background: #111;
+    font-family: sans-serif;
+}
+
+h1, h2 {
+    text-align: center;
+    margin: 0 auto;
+}
+h1 {
+    color: white;
+    font-size: 330%;
+}
+h2 {
+    font-size: 90%;
+}
+h3 {
+    font-size: 120%;
+    margin: 1em auto;
+}
+a {
+    color: #09f;
+    text-decoration: none;
+}
+
+.content {
+    width: 40em;
+    min-height: 20em;
+    margin: 2em auto 0;
+    padding: 0.2em 1em;
+    background: #222;
+    box-shadow: 1px 8px 32px 4px black;
+    text-align: center;
+}
+.files {
+    margin: 0.5em 0;
+    padding: 0.5em 1em;
+    background-color: #333;
+    list-style-type: none;
+}
+.files li {
+    position: relative;
+    padding: 0.2em 0.5em;
+}
+.files li.file {
+    text-align: left;
+}
+.files li.file:hover {
+    background-color: #444;
+}
+.files .name {
+    font-family: monospace;
+    font-size: 90%;
+    color: white;
+}
+.files .size {
+    font-size: 80%;
+    color: #aaa;
+    margin-left: 2em;
+}
+.files .rm {
+    position: absolute;
+    right: 0;
+    padding: 0;
+    margin: 0;
+}
+.files .totalSize {
+    border-top: solid 1px white;
+    text-align: right;
+}
+.chunkSize, .torrentSizeEstimate {
+    font-size: 80%;
+    color: #888;
+    margin: 0;
+    padding: 0 0 2em;
+}
+.chunkSize {
+    float: left;
+}
+.chunkSize select {
+    font-size: 80%;
+    margin: 0 1em;
+}
+.torrentSizeEstimate {
+    text-align: right;
+}
+.button {
+    font-size: 120%;
+    padding: 0.2em 0.5em;
+    border: 1px solid black;
+    margin: 0 auto;
+    border-radius: 0.2em;
+    text-shadow: 1px 1px 1px black;
+    color: #ddd;
+    cursor: pointer;
+}
+.button:hover {
+    color: white;
+}
+.button.red {
+    background-color: #a00;
+    background: linear-gradient(to bottom, #a00 0%, #900 50%, #700 51%, #600 100%);
+}
+.button.green {
+    background-color: #0a0;
+    background: linear-gradient(to bottom, #0a0 0%, #090 50%, #070 51%, #060 100%);
+}
+.button.blue {
+    background-color: #008;
+    background: linear-gradient(to bottom, #00a 0%, #009 50%, #007 51%, #006 100%);
+}
+
+footer p {
+    margin: 0 auto;
+    text-align: center;
+    color: #777;
+    font-size: 75%;
+}
