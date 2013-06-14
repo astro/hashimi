@@ -1,12 +1,15 @@
 <section ng-controller="FilesController">
   <h3>Pick files!</h3>
-  <ul class="files">
+  <ul file-drop="addFile" drop-hilight-color="#444" class="files">
     <li>
-      <label for="file" class="blue button" id="addButton">Add file...</label>
+      <label for="file" class="blue button" id="addButton">Browse</label>
       <input type="file" id="file"
              style="display: none"
 	     multiple
 	     file-receiver="addFile">
+    </li>
+    <li ng-show="files.length < 1" id="dropnote">
+      Or drag'n'drop files here...
     </li>
     <li ng-repeat="file in files" class="file">
       <span class="name">{{file.name}}</span>

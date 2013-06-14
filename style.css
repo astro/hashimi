@@ -91,6 +91,11 @@ a {
 .torrentSizeEstimate {
     text-align: right;
 }
+#dropnote {
+    text-align: center;
+    font-style: italic;
+}
+
 .button {
     font-size: 120%;
     padding: 0.2em 0.5em;

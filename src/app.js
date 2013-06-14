@@ -29,6 +29,40 @@ app.directive('fileReceiver', function() {
 	};
     });
 
+app.directive('fileDrop', function() {
+	return {
+	    restrict: 'A',
+	    link: function($scope, element, attrs) {
+		function hilight(hilight) {
+		    element[0].style.backgroundColor = hilight ?
+			attrs['dropHilightColor'] :
+			null;
+		}
+		element.bind('dragover', function(ev) {
+		    ev.preventDefault();
+		    hilight(true);
+		});
+		element.bind('drop', function(ev) {
+		    ev.preventDefault();
+		    hilight(false);
+		    console.log("drop", ev);
+		    var files = ev.dataTransfer && ev.dataTransfer.files;
+		    if (files)
+			$scope.$apply(function() {
+			    var cb = $scope[attrs['fileDrop']];
+		    	    for(var i = 0; i < files.length; i++)
+		    		cb(files.item(i));
+			});
+
+		});
+		element.bind('dragleave', function(ev) {
+		    ev.preventDefault();
+		    hilight(false);
+		});
+	    }
+	};
+    });
+
 function humanSize(size) {
     var units = ["B", "KB", "MB", "GB", "TB"];
     while(size >= 1024 && units.length > 1) {
