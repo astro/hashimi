@@ -1,4 +1,7 @@
 <section ng-controller="FilesController">
+  <p ng-show="error" class="error">
+    {{error}}
+  </p>
   <h3>Pick files!</h3>
   <ul file-drop="addFile" drop-hilight-color="#444" class="files">
     <li>

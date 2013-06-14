@@ -29,6 +29,12 @@ a {
     text-decoration: none;
 }
 
+.error {
+    color: #f00;
+    text-align: center;
+    font-weight: bold;
+    margin: 1em;
+}
 .content {
     width: 40em;
     min-height: 20em;

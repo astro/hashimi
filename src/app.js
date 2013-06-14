@@ -98,9 +98,33 @@ function humanTime(t) {
     }
 }
 
+function testFeatures(errCb) {
+    var missing = ['URL', 'Uint8Array', 'FileReader', 'Blob'].filter(
+	function(f) {
+	    return !window.hasOwnProperty(f);
+	});
+
+    if (URL && !URL.createObjectURL)
+	missing.push("URL.createObjectURL");
+    if (FileReader && !FileReader.prototype.readAsArrayBuffer)
+	missing.push("FileReader#readAsArrayBuffer()");
+    if (Blob && !Blob.prototype.slice)
+	missing.push("Blob#slice()");
+
+    if (missing.length > 0)
+	errCb("Warning: missing feature" +
+	      (missing.length == 1 ? "" : "s") +
+	      ": " +
+	      missing.join(", "));
+}
+
 /* TODO: https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications#Selecting_files_using_drag_and_drop */
 app.controller('FilesController', ['$scope', '$location', 'Hasher',
 	function($scope, $location, Hasher) {
+    testFeatures(function(error) {
+	$scope.error = error;
+    });
+
     $scope.files = [];
     $scope.updateTotalSize = function() {
 	$scope.bytesTotal = 0;
