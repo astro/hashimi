@@ -48,7 +48,6 @@ app.directive('fileDrop', function() {
 		element.bind('drop', function(ev) {
 		    ev.preventDefault();
 		    hilight(false);
-		    console.log("drop", ev);
 		    var files = ev.dataTransfer && ev.dataTransfer.files;
 		    if (files)
 			$scope.$apply(function() {
@@ -140,7 +139,6 @@ app.controller('FilesController', ['$scope', '$location', 'Hasher',
     $scope.updateTotalSize();
 
     $scope.addFile = function(file) {
-	console.log("addFile", file);
 	$scope.files.push(file);
 	$scope.updateTotalSize();
     };
@@ -240,13 +238,11 @@ app.factory('Hasher', function() {
     return {
 	start: function(files_, pieceLength) {
 	    files = files_;
-	    console.log("Hasher.start", files, pieceLength);
 	    result = null;
 
 	    hashFiles(files, pieceLength);
 	},
 	onProgress: function(updateCb, finishCb) {
-	    console.log("onProgress", updateCb, finishCb);
 	    if (result)
 		return finishCb(result);
 	    else {
@@ -312,7 +308,6 @@ app.controller('HashController', ['$scope', '$location', 'Hasher', 'Torrentify',
 	});
     }
     function onFinish(result) {
-	console.log("finish", result);
 	$scope.$apply(function() {
 	    $scope.result = result;
 	    $scope.finished = true;
@@ -368,8 +363,9 @@ app.factory('Torrentify', function() {
     return {
 	finalize: function(torrentName_, files, pieceLength, pieceHashes, trackerList) {
 	    torrentName = torrentName_;
+	    var i;
 	    var pieces = new Uint8Array(pieceHashes.length * 20);
-	    for(var i = 0; i < pieceHashes.length; i++) {
+	    for(i = 0; i < pieceHashes.length; i++) {
 		var hash = new Uint8Array(pieceHashes[i]);
 		for(var j = 0; j < 20; j++)
 		    pieces[i * 20 + j] = hash[j];
@@ -403,7 +399,7 @@ app.factory('Torrentify', function() {
 	    /* Calculate Manget Link */
 	    var infoParts = torrent2BlobParts(torrent.info);
 	    var sha1 = new Digest.SHA1();
-	    for(var i = 0; i < infoParts.length; i++) {
+	    for(i = 0; i < infoParts.length; i++) {
 		sha1.update(infoParts[i]);
 	    }
 	    var infoHash = arrayToHex(sha1.finalize());
