@@ -364,4 +364,8 @@ app.controller('TorrentController', ['$scope', '$location', 'Torrentify',
 	    }, errorHandler);
 	}, errorHandler);
     }, errorHandler);
+
+    $scope.restart = function() {
+	$location.path('/files');
+    };
 }]);

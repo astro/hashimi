@@ -1,7 +1,11 @@
 body {
     color: #ccc;
-    background: #111;
+    background-color: #030303;
+    /* background: linear-gradient(to bottom, #2f004f 0%, #1f002f 10%, #0f001f 25%, #030303 100%) no-repeat, #030303; */
+    background: linear-gradient(to bottom, #1f002f 0%, #030303 100%) no-repeat, #030303;
     font-family: sans-serif;
+    margin: 0;
+    padding: 1em 0;
 }
 
 h1, h2 {
@@ -11,9 +15,10 @@ h1, h2 {
 h1 {
     color: white;
     font-size: 330%;
+    font-variant: small-caps;
 }
 h2 {
-    font-size: 90%;
+    font-size: 80%;
 }
 h3 {
     font-size: 120%;
@@ -27,9 +32,10 @@ a {
 .content {
     width: 40em;
     min-height: 20em;
-    margin: 2em auto 0;
+    margin: 1em auto 0;
     padding: 0.2em 1em;
     background: #222;
+    border-radius: 16px;
     box-shadow: 1px 8px 32px 4px black;
     text-align: center;
 }
@@ -94,6 +100,7 @@ a {
     text-shadow: 1px 1px 1px black;
     color: #ddd;
     cursor: pointer;
+    display: inline-block;
 }
 .button:hover {
     color: white;
@@ -111,9 +118,21 @@ a {
     background: linear-gradient(to bottom, #00a 0%, #009 50%, #007 51%, #006 100%);
 }
 
+#addButton {
+    margin-bottom: 1em;
+}
+#startButton {
+    margin-top: 1em;
+}
+#restartButton {
+    margin-top: 2em;
+}
+
+
 footer p {
     margin: 0 auto;
     text-align: center;
     color: #777;
     font-size: 75%;
 }
+

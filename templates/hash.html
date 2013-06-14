@@ -16,11 +16,13 @@
   
   <h3 ng-show="finished">Just click above</h2>
   <h3 ng-hide="finished">While you're waiting...</h2>
-  <p ng-show="showTorrentname">
-    <label for="torrentname">Torrent name:</label>
-    <input id="torrentname" ng-model="torrentname"/>
-    <span style="font-style: italic; font-size: 70%">For convenience, name this like the directory your files are in</span>
-  </p>
-  <p>Why not add some trackers?</p>
-  <textarea id="trackerlist" ng-model="trackerlist" rows="5" cols="40"></textarea>
+  <div style="text-align: left; margin: 0 auto">
+    <p ng-show="showTorrentname">
+      <label for="torrentname">Torrent name:</label>
+      <input id="torrentname" ng-model="torrentname"/>
+      <span style="font-style: italic; font-size: 70%; display: inline-block; max-width: 18em;">For convenience, name this like the directory your files are in</span>
+    </p>
+    <p>Why not add some trackers?</p>
+    <textarea id="trackerlist" ng-model="trackerlist" rows="5" cols="40"></textarea>
+  </div>
 </section>

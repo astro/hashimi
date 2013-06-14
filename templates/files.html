@@ -2,7 +2,7 @@
   <h3>Pick files!</h3>
   <ul class="files">
     <li>
-      <label for="file" class="blue button">Add file...</label>
+      <label for="file" class="blue button" id="addButton">Add file...</label>
       <input type="file" id="file"
              style="display: none"
 	     multiple
@@ -31,6 +31,9 @@
     </p>
   </div>
   <p ng-show="files.length > 0" style="text-align: center">
-    <a ng-click="startHashing()" class="green button">Start hashing...</a>
+    <a ng-click="startHashing()" class="green button"
+       id="startButton">
+      Hash files
+    </a>
   </p>
 </section>
