@@ -259,7 +259,8 @@ app.factory('Hasher', function() {
 		return files[0].name;
 	    else {
 		var parts = files[0].name.split(".");
-		return parts[parts.length - 1];
+		parts.pop();
+		return parts.join(".");
 	    }
 	}
     };
