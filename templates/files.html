@@ -5,7 +5,9 @@
   <h3>Pick files!</h3>
   <ul file-drop="addFile" drop-hilight-color="#444" class="files">
     <li>
-      <label for="file" class="blue button" id="addButton">Browse</label>
+      <a for="file" id="addButton"
+	 ng-click="clickAddFile()"
+	 class="blue button">Browse</a>
       <input type="file" id="file"
              style="display: none"
 	     multiple

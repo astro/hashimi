@@ -138,6 +138,13 @@ app.controller('FilesController', ['$scope', '$location', 'Hasher',
     };
     $scope.updateTotalSize();
 
+    $scope.clickAddFile = function() {
+	var input = document.getElementById('file');
+	if (input && input.click)
+	    input.click();
+	else
+	    console.log("input", input);
+    };
     $scope.addFile = function(file) {
 	$scope.files.push(file);
 	$scope.updateTotalSize();
@@ -243,9 +250,12 @@ app.factory('Hasher', function() {
 	    hashFiles(files, pieceLength);
 	},
 	onProgress: function(updateCb, finishCb) {
-	    if (result)
-		return finishCb(result);
-	    else {
+	    if (result) {
+		setTimeout(function() {
+		    finishCb(result);
+		}, 1);
+		return;
+	    } else {
 		updateCbs.push(updateCb);
 		finishCbs.push(finishCb);
 	    }
